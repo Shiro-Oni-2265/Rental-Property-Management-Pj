@@ -1,7 +1,7 @@
 <?php
 $path_to_root = './';
 require_once 'includes/header.php';
-
+//gg
 // Fetch Statistics
 // 1. Rooms
 $stmt = $conn->query("SELECT 
