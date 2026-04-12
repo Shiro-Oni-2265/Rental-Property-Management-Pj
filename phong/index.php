@@ -12,8 +12,8 @@ require_once '../includes/header.php';
     <div class="table-container">
         <table>
             <thead>
-                <tr>
                     <th>Mã Phòng</th>
+                    <th>Hình Ảnh</th>
                     <th>Diện tích (m2)</th>
                     <th>Giá thuê</th>
                     <th>Trạng thái</th>
@@ -25,8 +25,12 @@ require_once '../includes/header.php';
                 $stmt = $conn->query("SELECT * FROM PHONG ORDER BY ma_phong ASC");
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     $status_class = $row['trang_thai'] == 'Trong' ? 'badge-success' : 'badge-danger';
+                    
+                    $img_src = !empty($row['hinh_anh']) ? '../' . $row['hinh_anh'] : 'https://placehold.co/100x75?text=Room+' . $row['ma_phong'];
+                    
                     echo "<tr>";
                     echo "<td>" . $row['ma_phong'] . "</td>";
+                    echo "<td><img src='" . htmlspecialchars($img_src) . "' alt='Room Image' style='width: 80px; height: 60px; object-fit: cover; border-radius: 4px;'></td>";
                     echo "<td>" . $row['dien_tich'] . "</td>";
                     echo "<td>" . formatMoney($row['gia_thue']) . "</td>";
                     echo "<td><span class='badge $status_class'>" . $row['trang_thai'] . "</span></td>";

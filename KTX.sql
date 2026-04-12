@@ -15,7 +15,9 @@ CREATE TABLE PHONG (
     ma_phong INT AUTO_INCREMENT PRIMARY KEY,
     dien_tich FLOAT,
     gia_thue DECIMAL(12,2),
-    trang_thai VARCHAR(20) DEFAULT 'Trong'
+    trang_thai VARCHAR(20) DEFAULT 'Trong',
+    mo_ta TEXT,
+    hinh_anh VARCHAR(255)
 );
 
 CREATE TABLE NGUOI_THUE (
@@ -114,11 +116,13 @@ DELIMITER $$
 
 CREATE PROCEDURE sp_add_phong(
     IN p_dien_tich FLOAT,
-    IN p_gia_thue DECIMAL(12,2)
+    IN p_gia_thue DECIMAL(12,2),
+    IN p_hinh_anh VARCHAR(255),
+    IN p_mo_ta TEXT
 )
 BEGIN
-    INSERT INTO PHONG(dien_tich, gia_thue)
-    VALUES(p_dien_tich, p_gia_thue);
+    INSERT INTO PHONG(dien_tich, gia_thue, hinh_anh, mo_ta)
+    VALUES(p_dien_tich, p_gia_thue, p_hinh_anh, p_mo_ta);
 END $$
 
 CREATE PROCEDURE sp_add_nguoi_thue(
