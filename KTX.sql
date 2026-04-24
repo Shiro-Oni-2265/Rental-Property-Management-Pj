@@ -45,6 +45,15 @@ CREATE TABLE HOP_DONG_NGUOI_THUE (
     FOREIGN KEY (ma_nguoi_thue) REFERENCES NGUOI_THUE(ma_nguoi_thue)
 );
 
+CREATE TABLE HOP_DONG_DICH_VU (
+    ma_hop_dong INT,
+    ma_dich_vu INT,
+    ngay_dang_ky DATE DEFAULT CURRENT_DATE,
+    PRIMARY KEY (ma_hop_dong, ma_dich_vu),
+    FOREIGN KEY (ma_hop_dong) REFERENCES HOP_DONG(ma_hop_dong) ON DELETE CASCADE,
+    FOREIGN KEY (ma_dich_vu) REFERENCES DICH_VU(ma_dich_vu) ON DELETE CASCADE
+);
+
 CREATE TABLE DICH_VU (
     ma_dich_vu INT AUTO_INCREMENT PRIMARY KEY,
     ten_dich_vu VARCHAR(50),

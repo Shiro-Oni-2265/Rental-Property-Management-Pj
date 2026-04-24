@@ -1,5 +1,6 @@
 <?php
 $path_to_root = '../';
+require_once '../includes/admin_guard.php';
 require_once '../includes/header.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -8,11 +9,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $cccd = $_POST['cccd'];
 
     try {
-        $sql = "CALL sp_add_nguoi_thue(:ho_ten, :sdt, :cccd)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':ho_ten', $ho_ten);
-        $stmt->bindParam(':sdt', $sdt);
-        $stmt->bindParam(':cccd', $cccd);
+        $stmt = $conn->prepare("INSERT INTO NGUOI_THUE(ho_ten, so_dien_thoai, cccd) VALUES(:ho_ten, :sdt, :cccd)");
+        $stmt->bindValue(':ho_ten', $ho_ten);
+        $stmt->bindValue(':sdt', $sdt);
+        $stmt->bindValue(':cccd', $cccd);
         
         if ($stmt->execute()) {
             echo "<script>alert('Thêm người thuê thành công!'); window.location.href='index.php';</script>";

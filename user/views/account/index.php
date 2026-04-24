@@ -76,7 +76,7 @@
         <?php endif; ?>
 
         <a href="?controller=auth&action=logout" class="btn btn-outline"
-            style="width: 100%; display: block; text-align: center; color: #dc2626; border-color: #fca5a5; background-color: #fef2f2;">
+            style="width: 100%; box-sizing: border-box; display: block; text-align: center; color: #dc2626; border-color: #fca5a5; background-color: #fef2f2;">
             <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
         </a>
     </div>
@@ -198,5 +198,39 @@
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
+        
+        <!-- Support & Feedback Section -->
+        <div style="margin-top: 2rem;">
+            <div style="background: white; border-radius: 0.5rem; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border-color);">
+                <h2 style="color: var(--primary-color); margin-top: 0; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border-color);">
+                    <i class="fa-solid fa-headset"></i> Gửi yêu cầu & Báo cáo sự cố
+                </h2>
+                <p style="color: var(--text-light); margin-bottom: 1.5rem;">Bạn đang gặp vấn đề về phòng ở, cần bảo trì thiết bị hay có góp ý với hệ thống? Hãy gửi cho chúng tôi tại đây để được hỗ trợ nhanh nhất.</p>
+                
+                <form action="?controller=account&action=submitFeedback" method="POST" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div>
+                        <label for="feedback_type" style="display: block; font-weight: 600; color: #334155; margin-bottom: 0.5rem;">Phân loại yêu cầu <span style="color: red;">*</span></label>
+                        <select id="feedback_type" name="feedback_type" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; background-color: #f9fafb; font-size: 1rem; color: #0f172a;">
+                            <option value="" disabled selected>-- Chọn loại vấn đề --</option>
+                            <option value="Yêu cầu bảo trì">Yêu cầu bảo trì (Điện, nước, cơ sở vật chất)</option>
+                            <option value="Khiếu nại">Khiếu nại (Tiếng ồn, an ninh, vệ sinh)</option>
+                            <option value="Góp ý">Góp ý (Đề xuất cải tiến hệ thống KTX)</option>
+                            <option value="Khác">Vấn đề khác</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="feedback_content" style="display: block; font-weight: 600; color: #334155; margin-bottom: 0.5rem;">Nội dung chi tiết <span style="color: red;">*</span></label>
+                        <textarea id="feedback_content" name="feedback_content" rows="4" required placeholder="Vui lòng cung cấp chi tiết (Ví dụ: Ống nước phòng 3 bị rò rỉ dưới bồn rửa mặt...)" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; font-family: inherit; font-size: 1rem; resize: vertical; box-sizing: border-box;"></textarea>
+                    </div>
+                    
+                    <div style="text-align: right;">
+                        <button type="submit" class="btn btn-primary" style="padding: 0.75rem 2rem; font-size: 1rem; border-radius: 0.5rem;">
+                            <i class="fa-solid fa-paper-plane"></i> Gửi thông báo
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>

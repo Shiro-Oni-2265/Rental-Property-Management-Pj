@@ -1,5 +1,6 @@
 <?php
 $path_to_root = '../';
+require_once '../includes/admin_guard.php';
 require_once '../includes/header.php';
 
 // Get Empty Rooms
@@ -21,34 +22,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $conn->beginTransaction();
 
         // 1. Create Contract
-        $sql = "CALL sp_create_hop_dong(:ma_phong, :ngay_bd, :ngay_kt, :tien_coc)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':ma_phong', $ma_phong);
-        $stmt->bindParam(':ngay_bd', $ngay_bd);
-        $stmt->bindParam(':ngay_kt', $ngay_kt);
-        $stmt->bindParam(':tien_coc', $tien_coc);
+        $stmt = $conn->prepare("INSERT INTO HOP_DONG(ma_phong, ngay_bat_dau, ngay_ket_thuc, tien_coc, trang_thai)
+                                VALUES(:ma_phong, :ngay_bd, :ngay_kt, :tien_coc, 'Dang thue')");
+        $stmt->bindValue(':ma_phong', $ma_phong);
+        $stmt->bindValue(':ngay_bd', $ngay_bd);
+        $stmt->bindValue(':ngay_kt', $ngay_kt);
+        $stmt->bindValue(':tien_coc', $tien_coc);
         $stmt->execute();
-        
-        // Get the generated ID (Assuming auto_increment works and lastInsertId returns it, or query max)
-        // Note: With stored procedure, lastInsertId might give 0 on some drivers unless SELECT LAST_INSERT_ID() is returned.
-        // I will use a direct query to get MAX id or trust PDO.
-        // A safer way is modifying the SP to return ID, but I can't modify DB easily.
-        // I'll grab the last inserted ID from HOP_DONG.
-        $stmt = $conn->query("SELECT MAX(ma_hop_dong) as id FROM HOP_DONG");
-        $last_id = $stmt->fetch(PDO::FETCH_ASSOC)['id'];
+        $last_id = (int)$conn->lastInsertId();
 
         // 2. Link Tenants
         $sql_link = "INSERT INTO HOP_DONG_NGUOI_THUE(ma_hop_dong, ma_nguoi_thue) VALUES (:ma_hd, :ma_nt)";
         $stmt_link = $conn->prepare($sql_link);
         
         foreach ($ma_nguoi_thue as $nt_id) {
-            $stmt_link->bindParam(':ma_hd', $last_id);
-            $stmt_link->bindParam(':ma_nt', $nt_id);
+            $stmt_link->bindValue(':ma_hd', $last_id);
+            $stmt_link->bindValue(':ma_nt', $nt_id);
             $stmt_link->execute();
         }
 
-        // Room status update is handled by formatting Trigger `trg_hop_dong_insert`.
-        // So no need to manually update Room status.
+        // Also update room status (even if trigger doesn't exist)
+        $upRoom = $conn->prepare("UPDATE PHONG SET trang_thai = 'Da thue' WHERE ma_phong = :id");
+        $upRoom->bindValue(':id', $ma_phong);
+        $upRoom->execute();
 
         $conn->commit();
         echo "<script>alert('Tạo hợp đồng thành công!'); window.location.href='index.php';</script>";

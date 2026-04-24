@@ -44,62 +44,76 @@ $conn = $db->getConnection();
         <a href="<?php echo $path_to_root; ?>index.php" class="brand">
             <i class="fa-solid fa-building-user"></i> PT Manager
         </a>
-
+        
+        <!-- Render Admin Sidebar if role is admin -->
+        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
         <ul class="nav-links">
             <li>
-                <a href="<?php echo $path_to_root; ?>index.php"
-                    class="<?php echo basename($_SERVER['PHP_SELF']) == 'index.php' && dirname($_SERVER['PHP_SELF']) == '/KTX_Website' ? 'active' : ''; ?>">
+                <a href="<?php echo $path_to_root; ?>index.php?controller=admin&action=dashboard" class="<?php echo isset($_GET['controller']) && $_GET['controller'] == 'admin' ? 'active' : ''; ?>">
                     <i class="fa-solid fa-chart-line"></i> Dashboard
                 </a>
             </li>
             <li>
-                <a href="<?php echo $path_to_root; ?>phong/index.php"
-                    class="<?php echo strpos($_SERVER['PHP_SELF'], '/phong/') !== false ? 'active' : ''; ?>">
+                <a href="<?php echo $path_to_root; ?>index.php?controller=room&action=index" class="<?php echo isset($_GET['controller']) && $_GET['controller'] == 'room' ? 'active' : ''; ?>">
                     <i class="fa-solid fa-door-open"></i> Quản lý Phòng
                 </a>
             </li>
             <li>
-                <a href="<?php echo $path_to_root; ?>nguoi_thue/index.php"
-                    class="<?php echo strpos($_SERVER['PHP_SELF'], '/nguoi_thue/') !== false ? 'active' : ''; ?>">
-                    <i class="fa-solid fa-users"></i> Người thuê
+                <a href="<?php echo $path_to_root; ?>nguoi_thue/index.php" class="">
+                    <i class="fa-solid fa-users"></i> Quản lý Người thuê
                 </a>
             </li>
             <li>
-                <a href="<?php echo $path_to_root; ?>hop_dong/index.php"
-                    class="<?php echo strpos($_SERVER['PHP_SELF'], '/hop_dong/') !== false ? 'active' : ''; ?>">
-                    <i class="fa-solid fa-file-contract"></i> Hợp đồng
+                <a href="<?php echo $path_to_root; ?>hop_dong/index.php" class="">
+                    <i class="fa-solid fa-file-contract"></i> Quản lý Hợp đồng
                 </a>
             </li>
             <li>
-                <a href="<?php echo $path_to_root; ?>dich_vu/index.php"
-                    class="<?php echo strpos($_SERVER['PHP_SELF'], '/dich_vu/') !== false ? 'active' : ''; ?>">
-                    <i class="fa-solid fa-bolt"></i> Dịch vụ
+                <a href="<?php echo $path_to_root; ?>hoa_don/index.php" class="">
+                    <i class="fa-solid fa-receipt"></i> Quản lý Hóa đơn
                 </a>
             </li>
             <li>
-                <a href="<?php echo $path_to_root; ?>hoa_don/index.php"
-                    class="<?php echo strpos($_SERVER['PHP_SELF'], '/hoa_don/') !== false ? 'active' : ''; ?>">
-                    <i class="fa-solid fa-file-invoice-dollar"></i> Hóa đơn
+                <a href="<?php echo $path_to_root; ?>dich_vu/index.php" class="">
+                    <i class="fa-solid fa-plug-circle-bolt"></i> Dịch vụ (Điện/Nước...)
                 </a>
             </li>
             <li>
-                <a href="<?php echo $path_to_root; ?>phan_hoi/index.php"
-                    class="<?php echo strpos($_SERVER['PHP_SELF'], '/phan_hoi/') !== false ? 'active' : ''; ?>">
-                    <i class="fa-solid fa-comments"></i> Phản hồi
-                </a>
-            </li>
-            <li>
-                <a href="<?php echo $path_to_root; ?>bao_tri/index.php"
-                    class="<?php echo strpos($_SERVER['PHP_SELF'], '/bao_tri/') !== false ? 'active' : ''; ?>">
+                <a href="<?php echo $path_to_root; ?>bao_tri/index.php" class="">
                     <i class="fa-solid fa-screwdriver-wrench"></i> Bảo trì
                 </a>
             </li>
-            <li style="margin-top: auto; padding-top: 2rem;">
-                <a href="<?php echo $path_to_root; ?>logout.php" style="color: #ef4444;">
+            <li>
+                <a href="<?php echo $path_to_root; ?>phan_hoi/index.php" class="">
+                    <i class="fa-solid fa-comment-dots"></i> Phản hồi
+                </a>
+            </li>
+            <li>
+                <a href="<?php echo $path_to_root; ?>index.php?controller=auth&action=logout" class="" style="color: var(--danger); margin-top: auto;">
                     <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
                 </a>
             </li>
         </ul>
+        <?php elseif (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'user'): ?>
+        <ul class="nav-links">
+            <li>
+                <a href="<?php echo $path_to_root; ?>index.php?controller=user&action=home" class="<?php echo isset($_GET['controller']) && $_GET['controller'] == 'user' ? 'active' : ''; ?>">
+                    <i class="fa-solid fa-house-user"></i> Hợp đồng của tôi
+                </a>
+            </li>
+            <li>
+                <!-- Bạn có thể thêm các chức năng khác cho người thuê ở đây -->
+                <a href="<?php echo $path_to_root; ?>user/index.php">
+                    <i class="fa-solid fa-search"></i> Xem phòng trống
+                </a>
+            </li>
+            <li>
+                <a href="<?php echo $path_to_root; ?>index.php?controller=auth&action=logout" class="" style="color: var(--danger); margin-top: auto;">
+                    <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+                </a>
+            </li>
+        </ul>
+        <?php endif; ?>
     </div>
 
     <div class="main-content">

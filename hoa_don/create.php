@@ -1,5 +1,6 @@
 <?php
 $path_to_root = '../';
+require_once '../includes/admin_guard.php';
 require_once '../includes/header.php';
 
 // Get Active Contracts
@@ -18,17 +19,50 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nam = $_POST['nam'];
 
     try {
-        $sql = "CALL sp_create_hoa_don(:ma_hd, :thang, :nam)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':ma_hd', $ma_hop_dong);
-        $stmt->bindParam(':thang', $thang);
-        $stmt->bindParam(':nam', $nam);
-        
-        if ($stmt->execute()) {
-            echo "<script>alert('Tạo hóa đơn thành công!'); window.location.href='index.php';</script>";
-        } else {
-            echo "<script>alert('Lỗi!');</script>";
-        }
+        // Create invoice (avoid stored procedure mismatch)
+        $stmt = $conn->prepare("INSERT INTO HOA_DON(ma_hop_dong, thang, nam, tong_tien, trang_thai)
+                                VALUES(:ma_hd, :thang, :nam, 0, 'Chua thanh toan')");
+        $stmt->bindValue(':ma_hd', $ma_hop_dong);
+        $stmt->bindValue(':thang', $thang);
+        $stmt->bindValue(':nam', $nam);
+        $stmt->execute();
+
+        $invoiceId = (int)$conn->lastInsertId();
+
+        // Auto-add: TIỀN PHÒNG line item (based on room rent)
+        $rentStmt = $conn->prepare("SELECT p.gia_thue
+                                    FROM HOP_DONG h
+                                    JOIN PHONG p ON h.ma_phong = p.ma_phong
+                                    WHERE h.ma_hop_dong = :id");
+        $rentStmt->bindValue(':id', $ma_hop_dong);
+        $rentStmt->execute();
+        $rent = $rentStmt->fetch(PDO::FETCH_ASSOC);
+        $gia_thue = $rent['gia_thue'] ?? 0;
+
+        // Ensure baseline services exist
+        $tienPhongDvId = ensureServiceExists($conn, 'Tiền phòng', 0, 'tháng');
+        ensureServiceExists($conn, 'Điện', 3500, 'kWh');
+        ensureServiceExists($conn, 'Nước', 15000, 'm3');
+
+        $ins = $conn->prepare("INSERT INTO CHI_TIET_HOA_DON(ma_hoa_don, ma_dich_vu, so_luong, thanh_tien)
+                               VALUES(:hd, :dv, 1, :tt)");
+        $ins->bindValue(':hd', $invoiceId);
+        $ins->bindValue(':dv', $tienPhongDvId);
+        $ins->bindValue(':tt', $gia_thue);
+        $ins->execute();
+
+        // Update total
+        $sum = $conn->prepare("SELECT SUM(thanh_tien) as total FROM CHI_TIET_HOA_DON WHERE ma_hoa_don = :id");
+        $sum->bindValue(':id', $invoiceId);
+        $sum->execute();
+        $total = $sum->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+
+        $up = $conn->prepare("UPDATE HOA_DON SET tong_tien = :total WHERE ma_hoa_don = :id");
+        $up->bindValue(':total', $total);
+        $up->bindValue(':id', $invoiceId);
+        $up->execute();
+
+        echo "<script>alert('Tạo hóa đơn thành công!'); window.location.href='index.php';</script>";
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
     }

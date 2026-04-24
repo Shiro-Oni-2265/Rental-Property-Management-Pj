@@ -82,13 +82,54 @@
             </tbody>
         </table>
 
+        <!-- Dịch Vụ Đi Kèm -->
+        <h3 style="color: #334155; margin-bottom: 1rem;">Dịch vụ đi kèm (Thanh toán hàng tháng)</h3>
+        <div style="background-color: #f8fafc; padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 1rem;">
+            
+            <!-- Điện -->
+            <label style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border: 1px solid #cbd5e1; border-radius: 0.25rem; background: #f1f5f9; cursor: not-allowed; opacity: 0.9;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <input type="checkbox" checked disabled style="width: 18px; height: 18px; accent-color: var(--primary-color);">
+                    <div>
+                        <div style="font-weight: bold; color: #334155;">Giá Điện (Bắt buộc)</div>
+                        <div style="font-size: 0.875rem; color: #64748b;">Tính theo số kWh tiêu thụ thực tế</div>
+                    </div>
+                </div>
+                <div style="font-weight: 500; color: #0f172a;">3.500đ / kWh</div>
+            </label>
+
+            <!-- Nước -->
+            <label style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border: 1px solid #cbd5e1; border-radius: 0.25rem; background: #f1f5f9; cursor: not-allowed; opacity: 0.9;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <input type="checkbox" checked disabled style="width: 18px; height: 18px; accent-color: var(--primary-color);">
+                    <div>
+                        <div style="font-weight: bold; color: #334155;">Giá Nước (Bắt buộc)</div>
+                        <div style="font-size: 0.875rem; color: #64748b;">Tính theo từng mét khối (m3) tiêu thụ</div>
+                    </div>
+                </div>
+                <div style="font-weight: 500; color: #0f172a;">4.000đ / m3</div>
+            </label>
+
+            <!-- Internet -->
+            <label style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border: 1px solid var(--primary-color); border-radius: 0.25rem; background: white; cursor: pointer; transition: all 0.2s;" id="internet_label">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <input type="checkbox" id="include_internet" name="include_internet" value="1" checked style="width: 18px; height: 18px; accent-color: var(--primary-color);">
+                    <div>
+                        <div style="font-weight: bold; color: #0f172a;">Internet / Wifi (Tùy chọn)</div>
+                        <div style="font-size: 0.875rem; color: #64748b;">Tốc độ cao, ổn định 24/7. Hủy bất kỳ lúc nào.</div>
+                    </div>
+                </div>
+                <div style="font-weight: 500; color: var(--primary-color);">100.000đ / tháng (Phòng)</div>
+            </label>
+        </div>
+
         <div
             style="background-color: #f8fafc; padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem; border: 1px solid #e2e8f0;">
             <h3 style="color: #334155; margin-top: 0; margin-bottom: 1rem;">Tổng Kết Thanh Toán</h3>
 
             <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; color: #475569;">
-                <span>Tổng Tiền Thuê:</span>
-                <span style="font-weight: 500;"><?= number_format($totalPrice ?? 0, 0, ',', '.') ?>đ</span>
+                <span>Tổng Tiền Thuê & Dịch vụ:</span>
+                <span id="total_rent_display" style="font-weight: 500;">...đ</span>
             </div>
 
             <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; color: #475569;">
@@ -101,11 +142,11 @@
             <div
                 style="display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: bold; color: #b91c1c;">
                 <span>Tổng Cộng Cần Thanh Toán (Dự kiến):</span>
-                <span><?= number_format(($totalPrice ?? 0) + ($totalDeposit ?? 0), 0, ',', '.') ?>đ</span>
+                <span id="grand_total_display">...đ</span>
             </div>
 
             <p style="margin-top: 0.5rem; margin-bottom: 0; font-size: 0.875rem; color: #991b1b;">
-                *Tiền cọc sẽ được hoàn trả sau khi kết thúc hợp đồng theo quy định. Tiền thuê thu cho đợt đầu tiên.
+                *Tiền cọc sẽ được hoàn trả sau khi kết thúc hợp đồng theo quy định. Tiền thuê thu cho đợt đầu tiên đã bao gồm dịch vụ nếu chọn. Phí Điện/Nước sẽ tính cuối tháng theo thực tế.
             </p>
         </div>
 
@@ -127,3 +168,47 @@
         </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const internetCheckbox = document.getElementById('include_internet');
+        const internetLabel = document.getElementById('internet_label');
+        const totalRentDisplay = document.getElementById('total_rent_display');
+        const grandTotalDisplay = document.getElementById('grand_total_display');
+        
+        // Base variables from PHP
+        const baseRent = <?= floatval($totalPrice ?? 0) ?>;
+        const totalDeposit = <?= floatval($totalDeposit ?? 0) ?>;
+        const numRooms = <?= count($checkoutItems) ?>;
+        const INTERNET_COST = 100000;
+
+        function updateTotals() {
+            let currentRent = baseRent;
+            let currentInternet = 0;
+            
+            if (internetCheckbox.checked) {
+                // Change UI of label
+                internetLabel.style.borderColor = 'var(--primary-color)';
+                internetLabel.style.background = 'white';
+                currentInternet = INTERNET_COST * numRooms;
+            } else {
+                // Change UI of label to match unselected
+                internetLabel.style.borderColor = '#cbd5e1';
+                internetLabel.style.background = '#f1f5f9';
+            }
+
+            const activeTotalRent = currentRent + currentInternet;
+            const grandTotal = activeTotalRent + totalDeposit;
+
+            // Format numbers like PHP's number_format(..., 0, ',', '.')
+            totalRentDisplay.innerText = new Intl.NumberFormat('vi-VN').format(activeTotalRent).replace(/\./g, '.') + 'đ';
+            grandTotalDisplay.innerText = new Intl.NumberFormat('vi-VN').format(grandTotal).replace(/\./g, '.') + 'đ';
+        }
+
+        // Add event listener
+        internetCheckbox.addEventListener('change', updateTotals);
+        
+        // Initial calculation
+        updateTotals();
+    });
+</script>

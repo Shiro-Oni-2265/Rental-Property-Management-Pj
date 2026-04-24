@@ -1,5 +1,6 @@
 <?php
 $path_to_root = '../';
+require_once '../includes/admin_guard.php';
 require_once '../includes/header.php';
 
 if (!isset($_GET['id'])) redirect('index.php');
@@ -57,13 +58,15 @@ if (isset($_POST['pay'])) {
 
 // Handle Add Room Price (Special Case)
 if (isset($_POST['add_room_price'])) {
-     // Check if 'Tien phong' service exists? Or just add it as a manual entry?
-     // Schema requires link to DICH_VU.
-     // So we must have a service called 'Tien phong'.
-     // Look for it or ask user to create it.
-     // For now, I will assume user works with Services manually.
-     // Or I can insert a fake service record if not exists? No, better not mess.
-     echo "<script>alert('Vui lòng thêm dịch vụ Tiền Phòng vào danh sách dịch vụ trước!');</script>";
+     $tienPhongDvId = ensureServiceExists($conn, 'Tiền phòng', 0, 'tháng');
+     $tt = $invoice['gia_thue'] ?? 0;
+     $ins_stmt = $conn->prepare("INSERT INTO CHI_TIET_HOA_DON(ma_hoa_don, ma_dich_vu, so_luong, thanh_tien) VALUES (:hd, :dv, 1, :tt)");
+     $ins_stmt->bindParam(':hd', $id);
+     $ins_stmt->bindParam(':dv', $tienPhongDvId);
+     $ins_stmt->bindParam(':tt', $tt);
+     $ins_stmt->execute();
+     updateInvoiceTotal($conn, $id);
+     echo "<script>window.location.href='details.php?id=$id';</script>";
 }
 
 function updateInvoiceTotal($conn, $id) {

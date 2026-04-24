@@ -6,7 +6,7 @@ class CheckoutModel {
         $this->conn = $db;
     }
 
-    public function processCheckout($userId, $items, $ngay_bat_dau = null) {
+    public function processCheckout($userId, $items, $ngay_bat_dau = null, $includeInternet = false) {
         try {
             $this->conn->beginTransaction();
 
@@ -47,6 +47,17 @@ class CheckoutModel {
                     ':ma_hop_dong' => $ma_hop_dong,
                     ':ma_nguoi_thue' => $userId
                 ]);
+
+                // Register mandatory services (1: Điện, 2: Nước)
+                $queryServices = "INSERT INTO HOP_DONG_DICH_VU (ma_hop_dong, ma_dich_vu) VALUES (:ma_hd, :ma_dv)";
+                $stmt3 = $this->conn->prepare($queryServices);
+                $stmt3->execute([':ma_hd' => $ma_hop_dong, ':ma_dv' => 1]); // Điện
+                $stmt3->execute([':ma_hd' => $ma_hop_dong, ':ma_dv' => 2]); // Nước
+
+                // Register optional service (3: Internet) if selected
+                if ($includeInternet) {
+                    $stmt3->execute([':ma_hd' => $ma_hop_dong, ':ma_dv' => 3]);
+                }
 
                 // The trigger trg_hop_dong_insert updates PHONG.trang_thai to 'Da thue'
             }

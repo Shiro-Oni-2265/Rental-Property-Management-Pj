@@ -1,5 +1,6 @@
 <?php
 $path_to_root = '../';
+require_once '../includes/admin_guard.php';
 require_once '../config/database.php';
 require_once '../includes/functions.php';
 

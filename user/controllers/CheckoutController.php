@@ -77,13 +77,16 @@ class CheckoutController {
         $itemsJson = $_POST['items_data'] ?? '[]';
         $itemsData = json_decode($itemsJson, true);
         $ngay_bat_dau = $_POST['ngay_bat_dau'] ?? date('Y-m-d');
+        
+        // Capture internet option choice
+        $includeInternet = isset($_POST['include_internet']) && $_POST['include_internet'] == '1';
 
         if (!$itemsData || empty($itemsData)) {
             header('Location: ?controller=cart');
             exit;
         }
 
-        $result = $this->checkoutModel->processCheckout($userId, $itemsData, $ngay_bat_dau);
+        $result = $this->checkoutModel->processCheckout($userId, $itemsData, $ngay_bat_dau, $includeInternet);
 
         if ($result['success']) {
             if ($source === 'cart' && isset($_SESSION['cart'][$userId])) {

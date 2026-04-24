@@ -7,6 +7,17 @@ class AuthModel {
     }
 
     public function login($phone, $cccd) {
+        // Hardcoded ADMIN login
+        if ($phone === 'admin' && $cccd === 'admin123') {
+            return [
+                'ma_nguoi_thue' => 0,
+                'ho_ten' => 'Administrator',
+                'so_dien_thoai' => 'admin',
+                'cccd' => 'admin123',
+                'role' => 'admin'
+            ];
+        }
+
         $query = "SELECT * FROM NGUOI_THUE WHERE so_dien_thoai = :phone AND cccd = :cccd LIMIT 1";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':phone', $phone);
@@ -14,7 +25,9 @@ class AuthModel {
         $stmt->execute();
         
         if ($stmt->rowCount() > 0) {
-            return $stmt->fetch(PDO::FETCH_ASSOC);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $user['role'] = 'user'; // assign role
+            return $user;
         }
         return false;
     }

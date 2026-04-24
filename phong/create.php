@@ -1,5 +1,6 @@
 <?php
 $path_to_root = '../';
+require_once '../includes/admin_guard.php';
 require_once '../includes/header.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -37,12 +38,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     try {
-        $sql = "CALL sp_add_phong(:dien_tich, :gia_thue, :hinh_anh, :mo_ta)";
+        $sql = "INSERT INTO PHONG (dien_tich, gia_thue, hinh_anh, mo_ta)
+                VALUES (:dien_tich, :gia_thue, :hinh_anh, :mo_ta)";
         $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':dien_tich', $dien_tich);
-        $stmt->bindParam(':gia_thue', $gia_thue);
-        $stmt->bindParam(':hinh_anh', $hinh_anh);
-        $stmt->bindParam(':mo_ta', $mo_ta);
+        $stmt->bindValue(':dien_tich', $dien_tich);
+        $stmt->bindValue(':gia_thue', $gia_thue);
+        $stmt->bindValue(':hinh_anh', $hinh_anh);
+        $stmt->bindValue(':mo_ta', $mo_ta);
 
         if ($stmt->execute()) {
             echo "<script>alert('Thêm phòng thành công!'); window.location.href='index.php';</script>";

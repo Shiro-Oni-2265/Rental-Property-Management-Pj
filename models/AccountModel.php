@@ -54,5 +54,16 @@ class AccountModel
         }
         return false;
     }
+
+    public function createFeedback($userId, $type, $content)
+    {
+        $query = "INSERT INTO PHAN_HOI (ma_nguoi_thue, noi_dung, loai, trang_thai) VALUES (:uid, :content, :type, 'Chua xu ly')";
+        $stmt = $this->conn->prepare($query);
+        return $stmt->execute([
+            ':uid' => $userId,
+            ':content' => $content,
+            ':type' => $type
+        ]);
+    }
 }
 ?>

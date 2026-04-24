@@ -65,5 +65,27 @@ class AccountController
         header('Location: ?controller=account&action=index');
         exit;
     }
+
+    public function submitFeedback()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $userId = $_SESSION['user_id'];
+            $type = $_POST['feedback_type'] ?? '';
+            $content = trim($_POST['feedback_content'] ?? '');
+
+            if (!empty($type) && !empty($content)) {
+                $result = $this->accountModel->createFeedback($userId, $type, $content);
+                if ($result) {
+                    echo "<script>alert('Gửi yêu cầu thành công! Ban quản lý sẽ phản hồi cho bạn trong thời gian sớm nhất.'); window.location.href='?controller=account&action=index';</script>";
+                    exit;
+                } else {
+                    echo "<script>alert('Có lỗi xảy ra khi gửi yêu cầu. Vui lòng thử lại sau.'); window.location.href='?controller=account&action=index';</script>";
+                    exit;
+                }
+            }
+        }
+        header('Location: ?controller=account&action=index');
+        exit;
+    }
 }
 ?>
