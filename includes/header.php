@@ -7,8 +7,8 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Kiểm tra đăng nhập Admin
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header("Location: " . $path_to_root . "login.php");
+if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+    header("Location: index.php?controller=auth&action=login");
     exit();
 }
 
@@ -49,47 +49,47 @@ $conn = $db->getConnection();
         <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
         <ul class="nav-links">
             <li>
-                <a href="<?php echo $path_to_root; ?>index.php?controller=admin&action=dashboard" class="<?php echo isset($_GET['controller']) && $_GET['controller'] == 'admin' ? 'active' : ''; ?>">
+                <a href="index.php?controller=admin&action=dashboard" class="<?php echo (isset($_GET['controller']) && $_GET['controller'] == 'admin') ? 'active' : ''; ?>">
                     <i class="fa-solid fa-chart-line"></i> Dashboard
                 </a>
             </li>
             <li>
-                <a href="<?php echo $path_to_root; ?>index.php?controller=room&action=index" class="<?php echo isset($_GET['controller']) && $_GET['controller'] == 'room' ? 'active' : ''; ?>">
+                <a href="index.php?controller=room&action=index" class="<?php echo (isset($_GET['controller']) && $_GET['controller'] == 'room') ? 'active' : ''; ?>">
                     <i class="fa-solid fa-door-open"></i> Quản lý Phòng
                 </a>
             </li>
             <li>
-                <a href="<?php echo $path_to_root; ?>nguoi_thue/index.php" class="">
+                <a href="index.php?controller=tenant&action=index" class="<?php echo (isset($_GET['controller']) && $_GET['controller'] == 'tenant') ? 'active' : ''; ?>">
                     <i class="fa-solid fa-users"></i> Quản lý Người thuê
                 </a>
             </li>
             <li>
-                <a href="<?php echo $path_to_root; ?>hop_dong/index.php" class="">
+                <a href="index.php?controller=contract&action=index" class="<?php echo (isset($_GET['controller']) && $_GET['controller'] == 'contract') ? 'active' : ''; ?>">
                     <i class="fa-solid fa-file-contract"></i> Quản lý Hợp đồng
                 </a>
             </li>
             <li>
-                <a href="<?php echo $path_to_root; ?>hoa_don/index.php" class="">
+                <a href="index.php?controller=invoice&action=index" class="<?php echo (isset($_GET['controller']) && $_GET['controller'] == 'invoice') ? 'active' : ''; ?>">
                     <i class="fa-solid fa-receipt"></i> Quản lý Hóa đơn
                 </a>
             </li>
             <li>
-                <a href="<?php echo $path_to_root; ?>dich_vu/index.php" class="">
+                <a href="index.php?controller=service&action=index" class="<?php echo (isset($_GET['controller']) && $_GET['controller'] == 'service') ? 'active' : ''; ?>">
                     <i class="fa-solid fa-plug-circle-bolt"></i> Dịch vụ (Điện/Nước...)
                 </a>
             </li>
             <li>
-                <a href="<?php echo $path_to_root; ?>bao_tri/index.php" class="">
+                <a href="index.php?controller=maintenance&action=index" class="<?php echo (isset($_GET['controller']) && $_GET['controller'] == 'maintenance') ? 'active' : ''; ?>">
                     <i class="fa-solid fa-screwdriver-wrench"></i> Bảo trì
                 </a>
             </li>
             <li>
-                <a href="<?php echo $path_to_root; ?>phan_hoi/index.php" class="">
+                <a href="index.php?controller=feedback&action=index" class="<?php echo (isset($_GET['controller']) && $_GET['controller'] == 'feedback') ? 'active' : ''; ?>">
                     <i class="fa-solid fa-comment-dots"></i> Phản hồi
                 </a>
             </li>
             <li>
-                <a href="<?php echo $path_to_root; ?>index.php?controller=auth&action=logout" class="" style="color: var(--danger); margin-top: auto;">
+                <a href="index.php?controller=auth&action=logout" class="" style="color: var(--danger); margin-top: auto;">
                     <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
                 </a>
             </li>
