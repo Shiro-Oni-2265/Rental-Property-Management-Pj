@@ -107,7 +107,7 @@ The application uses a Front Controller design pattern where all incoming HTTP r
 2. **Configure the Database:**
    - Open your browser and navigate to `http://localhost/phpmyadmin/`.
    - Create a new database named exactly: `quan_ly_phong_tro`.
-   - Select the newly created database, go to the **Import** tab, choose the file `KTX.sql` from this repository, and click **Import** to load tables, data, triggers, and procedures.
+   - Select the newly created database, go to the **Import** tab, choose the file `KTX_mysql.sql` from this repository, and click **Import** to load tables, data, triggers, and procedures.
 
 3. **Deploy Source Code:**
    - Copy the project folder `Rental-Property-Management-Pj` and paste it into the Apache server folder, typically:
@@ -121,7 +121,7 @@ The application uses a Front Controller design pattern where all incoming HTTP r
      username=root
      password=""  // empty password
      ```
-   - Test the connection by running: `http://localhost/Rental-Property-Management-Pj/test_db.php`.
+
 
 5. **Run the Application:**
    Open your browser and navigate to:
